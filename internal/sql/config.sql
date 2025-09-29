@@ -1,0 +1,17 @@
+INSERT INTO `config` (`id`, `created_at`, `updated_at`, `key`, `value`, `desc`) VALUES (1, '2023-12-27 22:40:22.813', '2025-08-22 23:01:35.029', 'website_avatar', 'https://foruda.gitee.com/avatar/1677041571085433939/5221991_szluyu99_1614389421.png', '网站头像');
+INSERT INTO `config` (`id`, `created_at`, `updated_at`, `key`, `value`, `desc`) VALUES (2, '2023-12-27 22:40:22.813', '2025-08-22 23:01:35.033', 'website_name', 'SoftenTheGlare382的个人博客', '网站名称');
+INSERT INTO `config` (`id`, `created_at`, `updated_at`, `key`, `value`, `desc`) VALUES (3, '2023-12-27 22:40:22.813', '2025-08-22 23:01:35.027', 'website_author', 'SoftenTheGlare382', '网站作者');
+INSERT INTO `config` (`id`, `created_at`, `updated_at`, `key`, `value`, `desc`) VALUES (4, '2023-12-27 22:40:22.813', '2025-08-22 23:01:35.023', 'website_intro', '复习资料供参考', '网站介绍');
+INSERT INTO `config` (`id`, `created_at`, `updated_at`, `key`, `value`, `desc`) VALUES (5, '2023-12-27 22:40:22.813', '2025-08-22 23:01:35.038', 'website_notice', '本项目仅为练习作品，若有不方便之处望海涵', '网站公告');
+INSERT INTO `config` (`id`, `created_at`, `updated_at`, `key`, `value`, `desc`) VALUES (6, '2023-12-27 22:40:22.813', '2025-08-22 23:01:35.031', 'website_createtime', '在那遥远的时候', '网站创建日期');
+INSERT INTO `config` (`id`, `created_at`, `updated_at`, `key`, `value`, `desc`) VALUES (7, '2023-12-27 22:40:22.813', '2025-08-22 23:01:35.011', 'website_record', '暂无', '网站备案号');
+INSERT INTO `config` (`id`, `created_at`, `updated_at`, `key`, `value`, `desc`) VALUES (8, '2023-12-27 22:40:22.813', '2025-08-22 23:01:35.008', 'qq', '123456789', 'QQ');
+INSERT INTO `config` (`id`, `created_at`, `updated_at`, `key`, `value`, `desc`) VALUES (9, '2023-12-27 22:40:22.813', '2025-08-22 23:01:35.015', 'github', 'https://github.com/SoftenTheGlare382', 'github');
+INSERT INTO `config` (`id`, `created_at`, `updated_at`, `key`, `value`, `desc`) VALUES (10, '2023-12-27 22:40:22.813', '2025-08-22 23:01:35.025', 'gitee', 'https://gitee.com/', 'gitee');
+INSERT INTO `config` (`id`, `created_at`, `updated_at`, `key`, `value`, `desc`) VALUES (11, '2023-12-27 22:40:22.813', '2025-08-22 23:01:35.019', 'tourist_avatar', 'https://cdn.hahacode.cn/config/tourist_avatar.png', '默认游客头像');
+INSERT INTO `config` (`id`, `created_at`, `updated_at`, `key`, `value`, `desc`) VALUES (12, '2023-12-27 22:40:22.813', '2025-08-22 23:01:35.021', 'user_avatar', 'https://cdn.hahacode.cn/config/user_avatar.png', '默认用户头像');
+# INSERT INTO `config` (`id`, `created_at`, `updated_at`, `key`, `value`, `desc`) VALUES (13, '2023-12-27 22:40:22.813', '2023-12-27 23:01:35.013', 'article_cover', 'https://cdn.hahacode.cn/config/default_article_cover.png', '默认文章封面');
+INSERT INTO `config` (`id`, `created_at`, `updated_at`, `key`, `value`, `desc`) VALUES (13, '2023-12-27 22:40:22.813', '2025-08-22 23:01:35.013', 'article_cover', 'https://piccn.ihuaben.com/pic/community/202402/2221/1708610323583-s4yo4MGN16_1280-720.jpeg', '默认文章封面');
+INSERT INTO `config` (`id`, `created_at`, `updated_at`, `key`, `value`, `desc`) VALUES (14, '2023-12-27 22:40:22.813', '2025-08-22 23:01:35.039', 'is_comment_review', 'true', '评论默认审核');
+INSERT INTO `config` (`id`, `created_at`, `updated_at`, `key`, `value`, `desc`) VALUES (15, '2023-12-27 22:40:22.813', '2025-08-22 23:01:35.017', 'is_message_review', 'true', '留言默认审核');
+INSERT INTO `config` (`id`, `created_at`, `updated_at`, `key`, `value`, `desc`) VALUES (16, '2023-12-27 22:59:20.110', '2025-08-22 23:01:35.035', 'about', '```javascript\nconsole.log(\"Hello World\")\n```\n\n搞搞新意思！', '');

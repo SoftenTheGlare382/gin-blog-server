@@ -1,0 +1,1 @@
+create database gin_blog_db;

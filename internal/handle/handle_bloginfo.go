@@ -1,0 +1,213 @@
+package handle
+
+import (
+	"context"
+	"gin-blog-server/internal/global"
+	"gin-blog-server/internal/model"
+	"gin-blog-server/internal/utils"
+	"github.com/gin-gonic/gin"
+	"github.com/redis/go-redis/v9"
+	"log/slog"
+	"strings"
+)
+
+type BlogInfo struct{}
+
+type AboutReq struct {
+	Content string `json:"content"`
+}
+
+type BlogHomeVO struct {
+	ArticleCount int `json:"article_count"` // 文章数量
+	UserCount    int `json:"user_count"`    // 用户数量
+	MessageCount int `json:"message_count"` // 留言数量
+	ViewCount    int `json:"view_count"`    // 访问量
+}
+
+// Report 上报用户信息，进行相应的统计操作
+//
+//	@Summary		上报用户信息
+//	@Description	用户登进后台时上报信息
+//	@Tags			blog_info
+//	@Accept			json
+//	@Produce		json
+//	@Param			data	body		object	true	"用户信息"
+//	@Success		0		{object}	Response[any]
+//	@Router			/report [post]
+func (*BlogInfo) Report(c *gin.Context) {
+	rdb := GetRDB(c)
+
+	ipAddress := "未知"
+	userAgent := utils.IP.GetUserAgent(c)
+	browser := userAgent.Name + " " + userAgent.Version.String()
+	os := userAgent.OS + " " + userAgent.OSVersion.String()
+	uuid := utils.MD5(ipAddress + browser + os)
+
+	ctx := context.Background()
+
+	// 当前用户没有被统计成为访问人数（不在 用户set 中）
+	if !rdb.SIsMember(ctx, global.KEY_UNIQUE_VISITOR_SET, uuid).Val() {
+		// 统计地域信息: 中国|0|江苏省|苏州市|电信
+		ipSource := utils.IP.GetIpSource(ipAddress)
+		// 获取到具体的位置, 提取出其中的 省份
+		if ipSource != "" {
+			address := strings.Split(ipSource, "|")
+			province := strings.ReplaceAll(address[2], "省", "")
+			rdb.HIncrBy(ctx, global.VISITOR_AREA, province, 1)
+		} else {
+			rdb.HIncrBy(ctx, global.VISITOR_AREA, "未知", 1)
+		}
+
+		// 后台访问数量 + 1
+		rdb.Incr(ctx, global.VIEW_COUNT)
+		// 将当前用户记录到 用户 set 中
+		rdb.SAdd(ctx, global.KEY_UNIQUE_VISITOR_SET, uuid)
+	}
+
+	ReturnSuccess(c, nil)
+}
+
+// GetConfigMap 获取配置
+//
+//	@Summary		获取配置信息
+//	@Description	获取配置信息
+//	@Tags			blog_info
+//	@Accept			json
+//	@Produce		json
+//	@Param			data	body		object	true	"配置信息"
+//	@Success		0		{object}	Response[any]
+//	@Router			/config [get]
+func (*BlogInfo) GetConfigMap(c *gin.Context) {
+	db := GetDB(c)
+	rdb := GetRDB(c)
+
+	// 从redis中获取配置信息
+	cache, err := getConfigCache(rdb)
+	if err != nil {
+		ReturnError(c, global.ErrRedisOp, err)
+		return
+	}
+	if len(cache) > 0 {
+		slog.Debug("成功从redis中获取配置信息")
+		ReturnSuccess(c, cache)
+		return
+	}
+
+	data, err := model.GetConfigMap(db)
+	if err != nil {
+		ReturnError(c, global.ErrDbOp, err)
+		return
+	}
+
+	if err = addConfigCache(rdb, data); err != nil {
+		ReturnError(c, global.ErrRedisOp, err)
+		return
+	}
+	ReturnSuccess(c, data)
+}
+
+// UpdateConfig 更新配置
+//
+//	@Summary		更新配置信息
+//	@Description	更新配置信息
+//	@Tags			blog_info
+//	@Accept			json
+//	@Produce		json
+//	@Param			data	body		map[string]string	true	"更新配置信息"
+//	@Success		0		{object}	Response[any]
+//	@Router			/config [patch]
+func (*BlogInfo) UpdateConfig(c *gin.Context) {
+	var m map[string]string
+	if err := c.ShouldBindJSON(&m); err != nil {
+		ReturnError(c, global.ErrRequest, err)
+		return
+	}
+	if err := model.CheckConfigMap(GetDB(c), m); err != nil {
+		ReturnError(c, global.ErrDbOp, err)
+		return
+	}
+	// 更新redis
+	if err := removeConfigCache(GetRDB(c)); err != nil {
+		ReturnError(c, global.ErrRedisOp, err)
+		return
+	}
+	ReturnSuccess(c, nil)
+}
+
+// GetAbout 获取 About 信息
+// @Summary 获取关于
+// @Description 获取关于
+// @Tags blog_info
+// @Produce json
+// @Success 0 {object} Response[string]
+// @Router /about [get]
+func (*BlogInfo) GetAbout(c *gin.Context) {
+	ReturnSuccess(c, model.GetConfig(GetDB(c), global.CONFIG_ABOUT))
+}
+
+// UpdateAbout 更新 About 信息
+// @Summary 更新关于
+// @Description 更新关于
+// @Tags blog_info
+// @Accept json
+// @Produce json
+// @Param data body object true "关于"
+// @Success 0 {object} Response[string]
+// @Router /about [put]
+func (*BlogInfo) UpdateAbout(c *gin.Context) {
+	var req AboutReq
+	if err := c.ShouldBindJSON(&req); err != nil {
+		ReturnError(c, global.ErrRequest, err)
+		return
+	}
+	err := model.CheckConfig(GetDB(c), global.CONFIG_ABOUT, req.Content)
+	if err != nil {
+		ReturnError(c, global.ErrDbOp, err)
+		return
+	}
+	ReturnSuccess(c, req.Content)
+}
+
+// GetHomeInfo 后台获取 Home 数据
+// @Summary 获取博客首页信息
+// @Description 获取博客首页信息
+// @Tags blog_info
+// @Produce json
+// @Success 0 {object} Response[model.BlogHomeVO]
+// @Router /home [get]
+func (*BlogInfo) GetHomeInfo(c *gin.Context) {
+	db := GetDB(c)
+	rdb := GetRDB(c)
+
+	articleCount, err := model.Count(db, &model.Article{}, "status = ? AND is_delete = ?", 1, 0)
+	if err != nil {
+		ReturnError(c, global.ErrDbOp, err)
+		return
+	}
+
+	userCount, err := model.Count(db, &model.UserInfo{})
+	if err != nil {
+		ReturnError(c, global.ErrDbOp, err)
+		return
+	}
+
+	messageCount, err := model.Count(db, &model.Message{})
+	if err != nil {
+		ReturnError(c, global.ErrDbOp, err)
+		return
+	}
+
+	viewCount, err := rdb.Get(rctx, global.VIEW_COUNT).Int()
+	if err != nil && err != redis.Nil {
+		ReturnError(c, global.ErrRedisOp, err)
+		return
+	}
+
+	ReturnSuccess(c, BlogHomeVO{
+		ArticleCount: articleCount,
+		UserCount:    userCount,
+		MessageCount: messageCount,
+		ViewCount:    viewCount,
+	})
+
+}

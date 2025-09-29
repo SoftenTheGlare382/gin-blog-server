@@ -1,0 +1,53 @@
+Server:
+  Mode: debug # debug | release
+  Port: localhost:8765
+  DbType: "mysql" # mysql | sqlite
+  DbAutoMigrate: true #是否自动迁移数据库表结构G0RM功能 (表结构没变可以不迁移, 提高启动速度)
+  DbLogMode: "error" #日志级别silent, error, warn, info, 默认 info
+JWT:
+  Secret: ""
+  Expire: 24 #Hours
+  Issuer: "gin-blog"
+Mysql:
+    Host: "localhost" #"8.138.134.122"
+    Port: 3306
+    Config: "charset=utf8mb4&parseTime=True&loc=Local"# 连接参数,如时区等
+    DbName: "gin_blog_db"
+    UserName: "root"
+    Password: "root"
+Sqlite:
+    Dsn: "gin-blog.db"
+Redis:
+  DB: 0
+  Addr: "localhost:6379"
+  Password: ""
+Session:
+    Name: "mysession"
+    Salt: "salt"
+    MaxAge: 600 # 600s
+Log:
+  Level: "debug" # debug | info | warn | error
+  Format: "text" # text | json
+  Directory: "log"
+Email:
+  #TODO 只能用qq邮箱，改回
+  Host: "smtp.qq.com" #服务器地址, 例如 smtp.qq.com 前往要发邮件的邮箱查看其 smtp 协议
+  Port: 587 #前往要发邮件的邮箱查看其 smtp 协议端口, 大多为 465
+  From: "3540893943@qq.com" #发件人邮箱
+  SmtpPass: "pfkozvwzmrtaciai" #密钥, 不是邮箱登录密码, 是开启 smtp 服务后获取的一串验证码
+  SmtpUser: "codingHome" #发件人昵称
+Captcha:
+  SendEmail: true #是否发送邮件验证码
+  ExpireTime: 120 #验证码过期时间, 单位秒
+Upload:
+  OssType: "local"# qiniu | local
+  Path: "./public/uploaded" # 本地文件访问路径: OssType="local" 生效
+  StorePath: "./public/uploaded" # 本地文件上传路径: 相对于 main.go, OssType="local" 生效
+Qiniu:
+  ImgPath: "" # 外链
+  Zone: ""
+  Bucket: ""
+  AccessKey: ""
+  SecretKey: ""
+  UseHttps: false
+  UseCdnDomains: false
