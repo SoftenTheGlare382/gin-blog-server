@@ -9,12 +9,12 @@ JWT:
   Expire: 24 #Hours
   Issuer: "gin-blog"
 Mysql:
-    Host: "localhost" #"8.138.134.122"
+    Host: "localhost" 
     Port: 3306
     Config: "charset=utf8mb4&parseTime=True&loc=Local"# 连接参数,如时区等
     DbName: "gin_blog_db"
-    UserName: "root"
-    Password: "root"
+    UserName: ""
+    Password: ""
 Sqlite:
     Dsn: "gin-blog.db"
 Redis:
@@ -33,8 +33,8 @@ Email:
   #TODO 只能用qq邮箱，改回
   Host: "smtp.qq.com" #服务器地址, 例如 smtp.qq.com 前往要发邮件的邮箱查看其 smtp 协议
   Port: 587 #前往要发邮件的邮箱查看其 smtp 协议端口, 大多为 465
-  From: "3540893943@qq.com" #发件人邮箱
-  SmtpPass: "pfkozvwzmrtaciai" #密钥, 不是邮箱登录密码, 是开启 smtp 服务后获取的一串验证码
+  From: "" #发件人邮箱
+  SmtpPass: "" #密钥, 不是邮箱登录密码, 是开启 smtp 服务后获取的一串验证码
   SmtpUser: "codingHome" #发件人昵称
 Captcha:
   SendEmail: true #是否发送邮件验证码
